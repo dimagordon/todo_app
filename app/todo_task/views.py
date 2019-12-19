@@ -8,7 +8,7 @@ from app.utils import is_json_request
 from .usecase import TodoTaskUseCase
 
 
-bp = Blueprint("todo_tasks", __name__, url_prefix="/v1/todo-tasks")
+bp = Blueprint("todo_tasks", __name__, url_prefix="/api/v1/todo-tasks")
 
 
 @bp.route('', methods=('GET',))

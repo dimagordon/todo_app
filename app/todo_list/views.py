@@ -8,7 +8,7 @@ from app.todo_list.usecase import TodoListUseCase
 from app.utils import is_json_request
 
 
-bp = Blueprint("todo_lists", __name__, url_prefix="/v1/todo-lists")
+bp = Blueprint("todo_lists", __name__, url_prefix="/api/v1/todo-lists")
 
 
 @bp.route("", methods=["POST"])
