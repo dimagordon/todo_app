@@ -57,6 +57,25 @@ def test_delete_todo_task_fail(client):
     assert 'error' in response.json
 
 
+def test_edit_todo_task(client):
+    client, app = client
+    with app.app_context():
+        todo_list_usecase = TodoListUseCase()
+        todo_list = todo_list_usecase.new_todo_list('new')
+
+        todo_task_usecase = TodoTaskUseCase()
+        todo_task = todo_task_usecase.create_task("some content", todo_list.id)
+
+    new_content = 'new_content'
+    response = client.patch(
+        f'/v1/todo-tasks/{todo_task.id}/edit',
+        data=json.dumps({'content': new_content}),
+        content_type='application/json',
+    )
+    assert response.status_code == HTTPStatus.OK
+    assert response.json.get('content') == new_content
+
+
 def test_finish_todo_task(client):
     client, app = client
     with app.app_context():
