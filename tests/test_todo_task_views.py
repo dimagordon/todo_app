@@ -72,3 +72,27 @@ def test_finish_todo_task(client):
         content_type='application/json'
     )
     assert response.status_code == HTTPStatus.OK
+
+
+def test_get_all_tasks(client):
+    client, app = client
+
+    with app.app_context():
+        todo_list_usecase = TodoListUseCase()
+        todo_list = todo_list_usecase.new_todo_list('new')
+
+        # need to understand all properties of flask app Context
+        todo_list_id = todo_list.id
+        todo_task_usecase = TodoTaskUseCase()
+        todo_task = todo_task_usecase.create_task("some content", todo_list_id)
+
+    response = client.get(
+        f'/v1/todo-tasks?todo_list_id={todo_list_id}',
+        content_type='application/json'
+    )
+    assert response.status_code == HTTPStatus.OK
+    data = response.json
+    assert len(data) == 1
+    assert set(data[0].keys()) == {'content', 'done', 'id', 'todo_list_id'}
+    assert todo_task.id == data[0].get('id')
+    assert todo_list_id == data[0].get('todo_list_id')
