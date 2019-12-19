@@ -1,5 +1,5 @@
-from app.models import TodoTask
 from app import db
+from app.models import TodoTask
 
 
 class TodoTaskUseCase:
