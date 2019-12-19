@@ -22,11 +22,12 @@ class ProductionConfig(Config):
 
 class DevelopmentConfig(Config):
     DEBUG = True
-    SQLALCHEMY_DATABASE_URI = f"{DB_DRIVER}://user:password@db:{DB_PORT}/app_db"
+    SQLALCHEMY_DATABASE_URI = f'sqlite:////dev.db'
 
 
 class TestingConfig(Config):
     TESTING = True
+    # in memory db
     SQLALCHEMY_DATABASE_URI = 'sqlite://'
 
 
