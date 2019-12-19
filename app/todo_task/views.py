@@ -1,9 +1,10 @@
 from http import HTTPStatus
 
 from flask import (
-    Blueprint, request, make_response, jsonify, abort
+    Blueprint, request, make_response, jsonify
 )
 
+from app.utils import is_json_request
 from .usecase import TodoTaskUseCase
 
 
@@ -11,10 +12,8 @@ bp = Blueprint("todo_tasks", __name__, url_prefix="/v1/todo-tasks")
 
 
 @bp.route('', methods=('GET',))
+@is_json_request
 def get_all_tasks_by_todo_list_id():
-    if not request.is_json:
-        return abort(HTTPStatus.BAD_REQUEST)
-
     usecase = TodoTaskUseCase()
     tasks = usecase.get_todo_list_tasks(todo_list_id=request.args.get('todo_list_id'))
     if usecase.error:
@@ -23,10 +22,8 @@ def get_all_tasks_by_todo_list_id():
 
 
 @bp.route('', methods=('POST',))
+@is_json_request
 def create_task():
-    if not request.is_json:
-        return abort(HTTPStatus.BAD_REQUEST)
-
     usecase = TodoTaskUseCase()
     task = usecase.create_task(
         content=request.json.get('content'),
@@ -38,10 +35,8 @@ def create_task():
 
 
 @bp.route('<int:task_id>/edit', methods=('PATCH',))
+@is_json_request
 def edit_task(task_id):
-    if not request.is_json:
-        return abort(HTTPStatus.BAD_REQUEST)
-
     usecase = TodoTaskUseCase()
     task = usecase.edit_task(task_id, request.json.get('content'))
     if usecase.error:
@@ -51,9 +46,6 @@ def edit_task(task_id):
 
 @bp.route('<int:task_id>/finish', methods=('PATCH',))
 def finish_task(task_id):
-    if not request.is_json:
-        return abort(HTTPStatus.BAD_REQUEST)
-
     usecase = TodoTaskUseCase()
     usecase.finish_task(task_id=task_id)
     if usecase.error:
