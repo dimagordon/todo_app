@@ -11,9 +11,9 @@ from app.todo_list.usecase import TodoListUseCase
 bp = Blueprint("todo_lists", __name__, url_prefix="/v1/todo-lists")
 
 
-@bp.route("/", methods=["POST"])
+@bp.route("", methods=["POST"])
 def new_todo_list():
-    if not request.is_json():
+    if not request.is_json:
         return abort(HTTPStatus.BAD_REQUEST)
 
     usecase = TodoListUseCase()
