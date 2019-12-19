@@ -13,12 +13,12 @@ def test_create_todo_task(client):
         id_ = todo_list.id
     data = {'content': 'New Todo task', 'todo_list_id': id_}
     response = client.post(
-        '/v1/todo-tasks',
+        '/api/v1/todo-tasks',
         data=json.dumps(data),
         content_type='application/json'
     )
 
-    assert response.status_code == 201
+    assert response.status_code == HTTPStatus.CREATED
 
 
 def test_delete_todo_task(client):
@@ -31,7 +31,7 @@ def test_delete_todo_task(client):
         todo_task = todo_task_usecase.create_task("some content", todo_list.id)
 
     response = client.delete(
-        f'/v1/todo-tasks/{todo_task.id}',
+        f'/api/v1/todo-tasks/{todo_task.id}',
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
@@ -39,7 +39,7 @@ def test_delete_todo_task(client):
 def test_delete_todo_task_fail(client):
     client, app = client
     response = client.delete(
-        f'/v1/todo-tasks/{200}',
+        f'/api/v1/todo-tasks/{200}',
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
     assert 'error' in response.json
@@ -56,7 +56,7 @@ def test_edit_todo_task(client):
 
     new_content = 'new_content'
     response = client.patch(
-        f'/v1/todo-tasks/{todo_task.id}/edit',
+        f'/api/v1/todo-tasks/{todo_task.id}/edit',
         data=json.dumps({'content': new_content}),
         content_type='application/json',
     )
@@ -75,7 +75,7 @@ def test_finish_todo_task(client):
         assert not todo_task.done
 
     response = client.patch(
-        f'/v1/todo-tasks/{todo_task.id}/finish',
+        f'/api/v1/todo-tasks/{todo_task.id}/finish',
         content_type='application/json'
     )
     assert response.status_code == HTTPStatus.OK
@@ -94,7 +94,7 @@ def test_get_all_tasks(client):
         todo_task = todo_task_usecase.create_task("some content", todo_list_id)
 
     response = client.get(
-        f'/v1/todo-tasks?todo_list_id={todo_list_id}',
+        f'/api/v1/todo-tasks?todo_list_id={todo_list_id}',
         content_type='application/json'
     )
     assert response.status_code == HTTPStatus.OK

@@ -1,4 +1,5 @@
 import json
+from http import HTTPStatus
 
 
 def test_create_todo_list(client):
@@ -6,12 +7,12 @@ def test_create_todo_list(client):
 
     data = {'title': 'New Todo List'}
     response = client.post(
-        '/v1/todo-lists',
+        '/api/v1/todo-lists',
         data=json.dumps(data),
         content_type='application/json'
     )
 
-    assert response.status_code == 201
+    assert response.status_code == HTTPStatus.CREATED
 
 
 def test_title_unique_constraint(client):
@@ -19,19 +20,18 @@ def test_title_unique_constraint(client):
 
     data = {'title': 'New Todo List'}
     response = client.post(
-        '/v1/todo-lists',
+        '/api/v1/todo-lists',
         data=json.dumps(data),
         content_type='application/json'
     )
 
-    assert response.status_code == 201
+    assert response.status_code == HTTPStatus.CREATED
 
     data = {'title': 'New Todo List'}
     response = client.post(
-        '/v1/todo-lists',
+        '/api/v1/todo-lists',
         data=json.dumps(data),
         content_type='application/json'
     )
 
-    assert response.status_code == 400
-    assert response.is_json
+    assert response.status_code == HTTPStatus.BAD_REQUEST
