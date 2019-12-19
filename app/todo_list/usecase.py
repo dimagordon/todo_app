@@ -17,6 +17,8 @@ class TodoListUseCase:
         db.session.add(todo_list)
         try:
             db.session.commit()
+            db.session.flush()
+            return TodoLists.query.get(todo_list.id)
         except IntegrityError:
             self.error = {'title': f'Todo list with title "{title}" already exists.'}
         except DataError as e:
