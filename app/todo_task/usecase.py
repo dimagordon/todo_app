@@ -2,18 +2,28 @@ from app.models import TodoTask
 from app import db
 
 
-class TaskUseCase:
+class TodoTaskUseCase:
 
     error = None
 
+    def get_todo_list_tasks(self, todo_list_id):
+        if todo_list_id is None:
+            self.error = "Bad Params"
+            return
+
+        tasks = TodoTask.query.filter_by(todo_list_id=todo_list_id)
+        return [task.to_json() for task in tasks]
+
     def create_task(self, content, todo_list_id):
-        if not content or not todo_list_id:
+        if not content or todo_list_id is None:
             self.error = "Bad Params"
             return
 
         task = TodoTask(content=content, todo_list_id=todo_list_id)
         db.session.add(task)
-        db.commit()
+        db.session.commit()
+        db.session.flush()
+        return TodoTask.query.get(task.id)
 
     def edit_task(self):
         pass
