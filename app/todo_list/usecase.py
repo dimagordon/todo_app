@@ -2,6 +2,7 @@ from sqlalchemy.exc import IntegrityError, DataError
 
 from app import db
 from app.models import TodoLists
+from app.utils import logger
 
 
 class TodoListUseCase:
@@ -17,10 +18,9 @@ class TodoListUseCase:
         db.session.add(todo_list)
         try:
             db.session.commit()
-            db.session.flush()
             return TodoLists.query.get(todo_list.id)
         except IntegrityError:
             self.error = {'title': f'Todo list with title "{title}" already exists.'}
         except DataError as e:
-            print(e)
+            logger.exception(e)
             self.error = {'todo-list': 'Something went wrong.'}
