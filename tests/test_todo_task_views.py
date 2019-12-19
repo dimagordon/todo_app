@@ -1,20 +1,8 @@
 import json
 from http import HTTPStatus
 
-import pytest
-
-from app import create_app, init_db
 from app.todo_list.usecase import TodoListUseCase
 from app.todo_task.usecase import TodoTaskUseCase
-
-
-@pytest.fixture
-def client():
-    app = create_app('test')
-    with app.test_client() as client:
-        with app.app_context():
-            init_db()
-        yield client, app
 
 
 def test_create_todo_task(client):
