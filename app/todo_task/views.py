@@ -37,8 +37,16 @@ def create_task():
     return jsonify(task.to_json()), HTTPStatus.CREATED
 
 
-def edit_task():
-    pass
+@bp.route('<int:task_id>/edit', methods=('PATCH',))
+def edit_task(task_id):
+    if not request.is_json:
+        return abort(HTTPStatus.BAD_REQUEST)
+
+    usecase = TodoTaskUseCase()
+    task = usecase.edit_task(task_id, request.json.get('content'))
+    if usecase.error:
+        return jsonify({"error": usecase.error}), HTTPStatus.BAD_REQUEST
+    return jsonify(task.to_json()), HTTPStatus.OK
 
 
 @bp.route('<int:task_id>/finish', methods=('PATCH',))
