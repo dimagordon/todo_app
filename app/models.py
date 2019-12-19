@@ -10,5 +10,12 @@ class TodoTask(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.String(200), nullable=False)
     done = db.Column(db.Boolean, default=False, nullable=False)
+    todo_list_id = db.Column(db.Integer, db.ForeignKey('todo_lists.id'), nullable=False)
 
-    task_id = db.Column(db.Integer, db.ForeignKey('person.id'), nullable=False)
+    def to_json(self):
+        return {
+            'id': self.id,
+            'content': self.content,
+            'done': self.done,
+            'todo_list_id': self.todo_list_id
+        }
