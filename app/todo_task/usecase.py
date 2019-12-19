@@ -22,7 +22,6 @@ class TodoTaskUseCase:
         task = TodoTask(content=content, todo_list_id=todo_list_id)
         db.session.add(task)
         db.session.commit()
-        assert task.id
         return TodoTask.query.get(task.id)
 
     def edit_task(self, task_id, content):
