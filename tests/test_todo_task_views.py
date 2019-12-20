@@ -23,15 +23,16 @@ def test_create_todo_task(client):
 
 def test_delete_todo_task(client):
     client, app = client
-    with app.app_context():
+    with app.test_request_context():
         todo_list_usecase = TodoListUseCase()
         todo_list = todo_list_usecase.new_todo_list('new')
 
         todo_task_usecase = TodoTaskUseCase()
         todo_task = todo_task_usecase.create_task("some content", todo_list.id)
+        todo_task_id = todo_task.id
 
     response = client.delete(
-        f'/api/v1/todo-tasks/{todo_task.id}',
+        f'/api/v1/todo-tasks/{todo_task_id}',
     )
     assert response.status_code == HTTPStatus.NO_CONTENT
 
@@ -47,16 +48,17 @@ def test_delete_todo_task_fail(client):
 
 def test_edit_todo_task(client):
     client, app = client
-    with app.app_context():
+    with app.test_request_context():
         todo_list_usecase = TodoListUseCase()
         todo_list = todo_list_usecase.new_todo_list('new')
 
         todo_task_usecase = TodoTaskUseCase()
         todo_task = todo_task_usecase.create_task("some content", todo_list.id)
+        todo_task_id = todo_task.id
 
     new_content = 'new_content'
     response = client.patch(
-        f'/api/v1/todo-tasks/{todo_task.id}/edit',
+        f'/api/v1/todo-tasks/{todo_task_id}/edit',
         data=json.dumps({'content': new_content}),
         content_type='application/json',
     )
@@ -72,10 +74,10 @@ def test_finish_todo_task(client):
 
         todo_task_usecase = TodoTaskUseCase()
         todo_task = todo_task_usecase.create_task("some content", todo_list.id)
-        assert not todo_task.done
+        todo_task_id = todo_task.id
 
     response = client.patch(
-        f'/api/v1/todo-tasks/{todo_task.id}/finish',
+        f'/api/v1/todo-tasks/{todo_task_id}/finish',
         content_type='application/json'
     )
     assert response.status_code == HTTPStatus.OK
@@ -92,6 +94,7 @@ def test_get_all_tasks(client):
         todo_list_id = todo_list.id
         todo_task_usecase = TodoTaskUseCase()
         todo_task = todo_task_usecase.create_task("some content", todo_list_id)
+        todo_task_id = todo_task.id
 
     response = client.get(
         f'/api/v1/todo-tasks?todo_list_id={todo_list_id}',
@@ -101,5 +104,5 @@ def test_get_all_tasks(client):
     data = response.json
     assert len(data) == 1
     assert set(data[0].keys()) == {'content', 'done', 'id', 'todo_list_id'}
-    assert todo_task.id == data[0].get('id')
+    assert todo_task_id == data[0].get('id')
     assert todo_list_id == data[0].get('todo_list_id')

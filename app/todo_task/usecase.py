@@ -22,7 +22,7 @@ class TodoTaskUseCase:
         task = TodoTask(content=content, todo_list_id=todo_list_id)
         db.session.add(task)
         db.session.commit()
-        return TodoTask.query.get(task.id)
+        return task
 
     def edit_task(self, task_id, content):
         if task_id is None or content is None:
