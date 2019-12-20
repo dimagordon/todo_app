@@ -23,6 +23,7 @@ class ProductionConfig(Config):
 class DevelopmentConfig(Config):
     DEBUG = True
     SQLALCHEMY_DATABASE_URI = f'sqlite:///dev.db'
+    SQLALCHEMY_ECHO = True
 
 
 class TestingConfig(Config):
