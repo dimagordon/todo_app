@@ -90,7 +90,6 @@ def test_get_all_tasks(client):
         todo_list_usecase = TodoListUseCase()
         todo_list = todo_list_usecase.new_todo_list('new')
 
-        # need to understand all properties of flask app Context
         todo_list_id = todo_list.id
         todo_task_usecase = TodoTaskUseCase()
         todo_task = todo_task_usecase.create_task("some content", todo_list_id)
