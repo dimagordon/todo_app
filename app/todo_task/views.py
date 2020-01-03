@@ -18,7 +18,7 @@ def get_all_tasks_by_todo_list_id():
     tasks = usecase.get_todo_list_tasks(todo_list_id=request.args.get('todo_list_id'))
     if usecase.error:
         return jsonify({"error": usecase.error}), HTTPStatus.BAD_REQUEST
-    return jsonify(tasks), HTTPStatus.OK
+    return jsonify([task.to_json() for task in tasks]), HTTPStatus.OK
 
 
 @bp.route('', methods=('POST',))

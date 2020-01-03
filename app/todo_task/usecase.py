@@ -11,8 +11,7 @@ class TodoTaskUseCase:
             self.error = "Bad request params"
             return
 
-        tasks = TodoTask.query.filter_by(todo_list_id=todo_list_id)
-        return [task.to_json() for task in tasks]
+        return TodoTask.query.filter_by(todo_list_id=todo_list_id)
 
     def create_task(self, content, todo_list_id):
         if not content or todo_list_id is None:
