@@ -13,6 +13,6 @@ def is_json_request(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if not request.is_json:
-            abort(HTTPStatus.BAD_REQUEST)
+            return abort(HTTPStatus.BAD_REQUEST)
         return f(*args, **kwargs)
     return decorated_function
