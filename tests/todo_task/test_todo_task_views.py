@@ -1,36 +1,38 @@
 import json
 from http import HTTPStatus
 
-from app.todo_list.usecase import TodoListUseCase
-from app.todo_task.usecase import TodoTaskUseCase
+from app.api.v1.todo_list.usecase import TodoListUseCase
+from app.api.v1.todo_task.usecase import TodoTaskUseCase
+
+
+def create_todo_list(title='new'):
+    uc = TodoListUseCase()
+    return uc.new_todo_list(title)
+
+
+def create_todo_task(todo_list_id, content="some content"):
+    uc = TodoTaskUseCase()
+    return uc.create_task(content, todo_list_id)
 
 
 def test_create_todo_task(client):
     client, app = client
     with app.app_context():
-        uc = TodoListUseCase()
-        todo_list = uc.new_todo_list('new')
-        id_ = todo_list.id
-    data = {'content': 'New Todo task', 'todo_list_id': id_}
+        todo_list_id = create_todo_list().id
+
     response = client.post(
         '/api/v1/todo-tasks',
-        data=json.dumps(data),
+        data=json.dumps({'content': 'New Todo task', 'todo_list_id': todo_list_id}),
         content_type='application/json'
     )
-
     assert response.status_code == HTTPStatus.CREATED
 
 
 def test_delete_todo_task(client):
     client, app = client
     with app.test_request_context():
-        todo_list_usecase = TodoListUseCase()
-        todo_list = todo_list_usecase.new_todo_list('new')
-
-        todo_task_usecase = TodoTaskUseCase()
-        todo_task = todo_task_usecase.create_task("some content", todo_list.id)
-        todo_task_id = todo_task.id
-
+        todo_list = create_todo_list()
+        todo_task_id = create_todo_task(todo_list.id).id
     response = client.delete(
         f'/api/v1/todo-tasks/{todo_task_id}',
     )
@@ -43,22 +45,17 @@ def test_delete_todo_task_fail(client):
         f'/api/v1/todo-tasks/{200}',
     )
     assert response.status_code == HTTPStatus.BAD_REQUEST
-    assert 'error' in response.json
 
 
 def test_edit_todo_task(client):
     client, app = client
     with app.test_request_context():
-        todo_list_usecase = TodoListUseCase()
-        todo_list = todo_list_usecase.new_todo_list('new')
-
-        todo_task_usecase = TodoTaskUseCase()
-        todo_task = todo_task_usecase.create_task("some content", todo_list.id)
-        todo_task_id = todo_task.id
+        todo_list = create_todo_list()
+        todo_task_id = create_todo_task(todo_list.id).id
 
     new_content = 'new_content'
     response = client.patch(
-        f'/api/v1/todo-tasks/{todo_task_id}/edit',
+        f'/api/v1/todo-tasks/{todo_task_id}',
         data=json.dumps({'content': new_content}),
         content_type='application/json',
     )
@@ -69,12 +66,8 @@ def test_edit_todo_task(client):
 def test_finish_todo_task(client):
     client, app = client
     with app.app_context():
-        todo_list_usecase = TodoListUseCase()
-        todo_list = todo_list_usecase.new_todo_list('new')
-
-        todo_task_usecase = TodoTaskUseCase()
-        todo_task = todo_task_usecase.create_task("some content", todo_list.id)
-        todo_task_id = todo_task.id
+        todo_list = create_todo_list()
+        todo_task_id = create_todo_task(todo_list.id).id
 
     response = client.patch(
         f'/api/v1/todo-tasks/{todo_task_id}/finish',
@@ -87,13 +80,8 @@ def test_get_all_tasks(client):
     client, app = client
 
     with app.app_context():
-        todo_list_usecase = TodoListUseCase()
-        todo_list = todo_list_usecase.new_todo_list('new')
-
-        todo_list_id = todo_list.id
-        todo_task_usecase = TodoTaskUseCase()
-        todo_task = todo_task_usecase.create_task("some content", todo_list_id)
-        todo_task_id = todo_task.id
+        todo_list_id = create_todo_list().id
+        todo_task_id = create_todo_task(todo_list_id).id
 
     response = client.get(
         f'/api/v1/todo-tasks?todo_list_id={todo_list_id}',
